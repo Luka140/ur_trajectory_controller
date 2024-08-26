@@ -25,6 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             f'ur_controller = {package_name}.ur_controller:main',
+            f'ur_trigger = {package_name}.ur_traj_trigger_tester:main',
         ],
     },
 )

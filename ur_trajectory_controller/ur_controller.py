@@ -5,11 +5,10 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.qos import QoSProfile, qos_profile_system_default, ReliabilityPolicy
 from rclpy.executors import MultiThreadedExecutor
 
-# from ur_communication_interfaces.srv import SetPayload, SetTCP, MoveWaypoint, MovePath
-
 from builtin_interfaces.msg import Duration
 from rcl_interfaces.msg import ParameterDescriptor
 
+from std_msgs.msg import Empty
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from sensor_msgs.msg import JointState
 
@@ -21,47 +20,61 @@ class UrController(Node):
     def __init__(self) -> None:
         super().__init__('ur_controller')
 
-
         # Declare all parameters
         self.declare_parameter("controller_name", "position_trajectory_controller")
-        self.declare_parameter("wait_sec_between_publish", 6)
-        self.declare_parameter("goal_names", ["pos1", "pos2"])
+        self.declare_parameter("goal_names", [""])
+        self.declare_parameter('movement_duration', [6, 0])
         self.declare_parameter("joints", [""])
         self.declare_parameter("check_starting_point", False)
 
         # Read parameters
-        controller_name = self.get_parameter("controller_name").value
-        wait_sec_between_publish = self.get_parameter("wait_sec_between_publish").value
-        goal_names = self.get_parameter("goal_names").value
-        self.joints = self.get_parameter("joints").value
-        self.check_starting_point = self.get_parameter("check_starting_point").value
+        controller_name             = self.get_parameter("controller_name").value
+        goal_names                  = self.get_parameter("goal_names").value
+        self.movement_duration      = self.get_parameter("movement_duration").value
+        self.joints                 = self.get_parameter("joints").value
+        self.check_starting_point   = self.get_parameter("check_starting_point").value
         self.starting_point = {}
 
         if self.joints is None or len(self.joints) == 0:
             raise Exception('"joints" parameter is not set!')
 
-        # starting point stuff
-        if self.check_starting_point:
-            # declare nested params
-            for name in self.joints:
-                param_name_tmp = "starting_point_limits" + "." + name
-                self.declare_parameter(param_name_tmp, [-2 * 3.14159, 2 * 3.14159])
-                self.starting_point[name] = self.get_parameter(param_name_tmp).value
+        if goal_names is None or len(goal_names) == 0:
+            raise Exception('"goal_names" parameter is not set! - There are no waypoints available.')
 
-            for name in self.joints:
-                if len(self.starting_point[name]) != 2:
-                    raise Exception('"starting_point" parameter is not set correctly!')
-                
-            self.joint_state_sub = self.create_subscription(
-                JointState, "joint_states", self.joint_state_callback, 10
-            )
+        # If desired check whether the starting point is valid/safe position
+        if self.check_starting_point:
+            # Reads the start limits from the config
+            self.check_start_position()
+
+            # Subscribe to joint_states to check whether the actual state is within the start limits only for the first callback
+            self.joint_state_msg_received = False
+            self.joint_state_sub = self.create_subscription(JointState, 
+                                                            "joint_states", 
+                                                            self.joint_state_callback, 
+                                                            10)
+
         # initialize starting point status
         self.starting_point_ok = not self.check_starting_point
 
-        self.joint_state_msg_received = False
-
         # Read all positions from parameters
-        self.goals = []  # List of JointTrajectoryPoint
+        self.goals = self.read_waypoint_params(goal_names)
+
+        # Setup trajectory publisher and the trigger subscriber 
+        publish_topic = f"/{controller_name}/joint_trajectory"
+        subscriber_topic = f"/{controller_name}/trigger_move"
+        self.publisher_traj                 = self.create_publisher(JointTrajectory, publish_topic, 1)
+        self.subscriber_execute_next_move   = self.create_subscription(Empty, subscriber_topic, self.execute_next_move, 1)
+        
+        # Counter to keep track of which goal within the list is next. Goals will loop infinitely
+        self.goal_indexer = 0
+        
+        self.get_logger().info(
+            f"Publishing {len(goal_names)} goals on topic '{publish_topic}'"
+            f"Waiting for a message on  topic {subscriber_topic} to execute the next move"
+        )
+
+    def read_waypoint_params(self, goal_names) -> list[JointTrajectoryPoint]:
+        goals = []  # List of JointTrajectoryPoint
         for name in goal_names:
             self.declare_parameter(name, descriptor=ParameterDescriptor(dynamic_typing=True))
 
@@ -104,8 +117,8 @@ class UrController(Node):
                 one_ok = True
 
             if one_ok:
-                point.time_from_start = Duration(sec=4)
-                self.goals.append(point)
+                point.time_from_start = Duration(sec=self.movement_duration[0], nanosec=self.movement_duration[1])
+                goals.append(point)
                 self.get_logger().info(f'Goal "{name}" has definition {point}')
 
             else:
@@ -118,34 +131,24 @@ class UrController(Node):
                     "effort: [eff_joint1, eff_joint2, ...]"
                 )
 
-        if len(self.goals) < 1:
+        if len(goals) < 1:
             self.get_logger().error("No valid goal found. Exiting...")
             exit(1)
 
-        publish_topic = "/" + controller_name + "/" + "joint_trajectory"
+        return goals
 
-        self.get_logger().info(
-            f"Publishing {len(goal_names)} goals on topic '{publish_topic}' every "
-            f"{wait_sec_between_publish} s"
-        )
-
-        self.publisher_ = self.create_publisher(JointTrajectory, publish_topic, 1)
-        self.timer = self.create_timer(wait_sec_between_publish, self.timer_callback)
-        self.i = 0
-
-    def timer_callback(self):
+    def execute_next_move(self, msg):
 
         if self.starting_point_ok:
-
-            self.get_logger().info(f"Sending goal {self.goals[self.i]}.")
+            self.get_logger().info(f"Sending goal {self.goals[self.goal_indexer]}.")
 
             traj = JointTrajectory()
             traj.joint_names = self.joints
-            traj.points.append(self.goals[self.i])
-            self.publisher_.publish(traj)
+            traj.points.append(self.goals[self.goal_indexer])
+            self.publisher_traj.publish(traj)
 
-            self.i += 1
-            self.i %= len(self.goals)
+            self.goal_indexer += 1
+            self.goal_indexer %= len(self.goals)
 
         elif self.check_starting_point and not self.joint_state_msg_received:
             self.get_logger().warn(
@@ -175,8 +178,23 @@ class UrController(Node):
             self.joint_state_msg_received = True
         else:
             return
-    
+        
+    def check_start_position(self) -> None:
+        """
+        Reading the limits on the start position.
+        The actual position will be checked once a joint state message is first received. 
+        """
+        # declare nested params
+        for name in self.joints:
+            param_name_tmp = "starting_point_limits" + "." + name
+            self.declare_parameter(param_name_tmp, [-2 * 3.14159, 2 * 3.14159])
+            self.starting_point[name] = self.get_parameter(param_name_tmp).value
 
+        for name in self.joints:
+            if len(self.starting_point[name]) != 2:
+                raise Exception('"starting_point" parameter is not set correctly!')
+
+    
 def main(args=None):
     rclpy.init(args=args)
 
