@@ -19,6 +19,8 @@ def generate_launch_description():
     ur_type = LaunchConfiguration("ur_type")
     robot_ip = LaunchConfiguration("robot_ip")
     kinematics_params_file = LaunchConfiguration("kinematics_params_file")
+    rviz_file = LaunchConfiguration("rviz_file")
+
     pkg = "ur_trajectory_controller"
 
     declared_arguments = []
@@ -65,6 +67,17 @@ def generate_launch_description():
         )
     )
 
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "rviz_file",
+            default_value = PathJoinSubstitution([
+                FindPackageShare("ur_trajectory_controller"), "config", "rviz_config.rviz",
+                        ]
+                    ),
+            description="Path to the rviz file",
+        )
+    )
+
 
     return LaunchDescription(
         declared_arguments
@@ -84,16 +97,10 @@ def generate_launch_description():
                 launch_arguments={
                     "ur_type": ur_type,
                     "robot_ip": robot_ip,
-                    "kinematics_params_file": kinematics_params_file
+                    "kinematics_params_file": kinematics_params_file,
                     # "kinematics_params_file": kinematics_params_file
                     # "tf_prefix": [LaunchConfiguration("ur_type"), "_"],
-                    # "rviz_config_file": PathJoinSubstitution(
-                    #     [
-                    #         FindPackageShare("my_robot_cell_description"),
-                    #         "rviz",
-                    #         "urdf.rviz",
-                    #     ]
-                    # ),
+                    "rviz_config_file": rviz_file,
                     # "description_launchfile": PathJoinSubstitution(
                     #     [
                     #         FindPackageShare("my_robot_cell_control"),

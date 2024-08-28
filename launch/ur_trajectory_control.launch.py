@@ -8,10 +8,10 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
 
     pkg = "ur_trajectory_controller"
-
+    path_config = "test_grinding_measurement_config.yaml"
 
     position_goals = PathJoinSubstitution(
-        [FindPackageShare(f"{pkg}"), "config", "test_grinding_measurement_config.yaml"]
+        [FindPackageShare(f"{pkg}"), "config", path_config]
     )
     
     controller = Node(
@@ -33,7 +33,12 @@ def generate_launch_description():
         executable="keyboard"
     )
 
+    flange_tool_tf = Node(package="tf2_ros",
+                          executable='static_transform_publisher',
+                          arguments= ["0", "0", "0", "0", "0", "-1.570796", "flange", "scancontrol"])
+
     ld = LaunchDescription([controller])
     ld.add_action(tester)
     ld.add_action(keyboard_listener)
+    ld.add_action(flange_tool_tf)
     return ld

@@ -14,6 +14,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
         (os.path.join('share', package_name, 'config'), glob('config/*.yaml')),
+        (os.path.join('share', package_name, 'config'), glob('config/*.rviz')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -26,6 +27,7 @@ setup(
         'console_scripts': [
             f'ur_controller = {package_name}.ur_controller:main',
             f'ur_trigger = {package_name}.ur_traj_trigger_tester:main',
+            f'ur_trajectory_recorder = {package_name}.ur_trajectory_recorder:main',
         ],
     },
 )
