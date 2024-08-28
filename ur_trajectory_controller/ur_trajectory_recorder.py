@@ -23,7 +23,7 @@ class PathRecorder(Node):
         self.movement_duration = 8
         self.filepath = 'src/ur_trajectory_controller/config/trajectories'
         
-        # Retain an array of past states - keep it at a max length (nr of rows) of 10 msgs 
+        # Retain an array of past states - keep it at a max length (nr of rows) of 10 msgs to average over later
         self.states = np.empty((10, 6))
         # index of the row to be replaced
         self.oldest_index = 0 
@@ -38,7 +38,6 @@ class PathRecorder(Node):
 
         # List storing all recorded points 
         self.trajectory = []
-    
 
     def key_callback(self, msg):
         if msg.code == self.trigger_key:
