@@ -17,11 +17,11 @@ class PathRecorder(Node):
 
         self.trigger_key = Key.KEY_P
         self.reset_key   = Key.KEY_DELETE   
-        self.finish_key  = Key.KEY_KP_ENTER
+        self.finish_key  = Key.KEY_RETURN
 
         self.controller  = 'scaled_joint_trajectory_controller'
         self.movement_duration = 8
-        self.filepath = 'src/ur_trajectory_controller/config'
+        self.filepath = 'src/ur_trajectory_controller/config/trajectories'
         
         # Retain an array of past states - keep it at a max length (nr of rows) of 10 msgs 
         self.states = np.empty((10, 6))
@@ -52,27 +52,30 @@ class PathRecorder(Node):
         positions = msg.position
         self.states[self.oldest_index, :] = positions
         self.oldest_index += 1 
-        self.oldest_index %= 9
+        self.oldest_index %= 10
         
         if self.joint_names is None:
             self.joint_names = msg.name
 
     def register_position(self):
-        average_position = np.mean(self.states, axis=1)
+        self.get_logger().info('Registering position')
+        average_position = np.mean(self.states, axis=0)
+        # self.get_logger().info(f'avg_pos: {average_position}')
         self.trajectory.append(average_position)
 
     def reset_trajectory(self):
         self.trajectory = []
+        self.get_logger().info('The stored trajectory has been reset')
 
     def write_to_file(self):
-        
-        filename = f'{self.filepath}/trajectory_config{datetime.now()}.yaml'
-        indent = ' '
+        filename = f'{self.filepath}/trajectory_{datetime.now()}.yaml'
+        self.get_logger().info(f'Creating config file at {filename}')
+        indent = '  '
         with open(filename, 'w') as f:
             # Header
             f.write('publisher_scaled_joint_trajectory_controller:\n')
             f.write(f'{indent}ros__parameters:\n\n')
-            f.write(f'{indent*2}{self.controller}\n\n')
+            f.write(f'{indent*2}controller_name: "{self.controller}"\n\n')
 
             # Waypoints
             nr_of_waypoints = len(self.trajectory)
@@ -80,7 +83,7 @@ class PathRecorder(Node):
 
             for i in range(nr_of_waypoints):
                 f.write(f'{indent*2}pose{i}:\n')
-                f.write(f'{indent*3}positions: {self.trajectory[i]}\n')
+                f.write(f'{indent*3}positions: {np.array2string(self.trajectory[i], precision=10, separator=",", max_line_width=10**3)}\n')
 
             # Movement duration
             f.write(f'\n{indent*2}movement_duration: [{int(self.movement_duration)}, {int((self.movement_duration - int(self.movement_duration))/10**9)}]\n\n')

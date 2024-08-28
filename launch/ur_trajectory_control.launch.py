@@ -8,10 +8,11 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
 
     pkg = "ur_trajectory_controller"
-    path_config = "test_grinding_measurement_config.yaml"
+    # path_config = "test_grinding_measurement_config.yaml"
+    path_config = "trajectory_2024-08-28 09:53:26.650496.yaml"
 
     position_goals = PathJoinSubstitution(
-        [FindPackageShare(f"{pkg}"), "config", path_config]
+        [FindPackageShare(f"{pkg}"), "config/trajectories", path_config]
     )
     
     controller = Node(
