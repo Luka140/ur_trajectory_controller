@@ -9,17 +9,18 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
 def generate_launch_description():
+    pkg = 'ur_trajectory_controller'
 
     # Include the driver launch file.
     driver = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [os.path.join(get_package_share_directory('ur_trajectory_controller'),'launch','ur_driver.launch.py')])
+            [os.path.join(get_package_share_directory(pkg),'launch','ur_driver.launch.py')])
     )
 
     # Include the trajectory controller launch file
     controller = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [os.path.join(get_package_share_directory('ur_trajectory_controller'),'launch', 'ur_trajectory_control.launch.py')])
+            [os.path.join(get_package_share_directory(pkg),'launch', 'ur_trajectory_control.launch.py')])
     )
 
     lls_pcl = IncludeLaunchDescription(
@@ -27,8 +28,22 @@ def generate_launch_description():
             [os.path.join(get_package_share_directory('lls_processing'),'launch', 'lls_processing.launch.py')])
     )
     
+    
+    rviz_config_path = os.path.join(get_package_share_directory(pkg),
+        'config',
+        'rviz_config.rviz'
+    )
+    rviz = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen',
+        arguments=['-d', rviz_config_path,],
+    )
+
     return LaunchDescription([
         driver,
         controller,
-        lls_pcl
+        lls_pcl,
+        rviz
     ]) 

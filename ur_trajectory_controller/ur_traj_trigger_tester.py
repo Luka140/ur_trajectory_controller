@@ -34,19 +34,23 @@ class UrController(Node):
 
 
         if msg.code == Key.KEY_X:
-            val = SetBool.Request()
             self.inv_x = not self.inv_x
-            val.data = self.inv_x
+            val = SetBool.Request(data=self.inv_x)
             self.get_logger().info(f"Fipping the x-axis of the LLS to {val.data}")
-            self.x_flipper.call_async(val)
+            call = self.x_flipper.call_async(val)
+            call.add_done_callback(self.axis_flipped_callback)
         
         if msg.code == Key.KEY_Z:
-            val = SetBool.Request()
             self.inv_z = not self.inv_z
-            val.data = self.inv_z
+            val = SetBool.Request(data=self.inv_z)
             self.get_logger().info(f"Fipping the z-axis of the LLS to {val.data}")
-            self.z_flipper.call_async(val)
+            call = self.z_flipper.call_async(val)
+            call.add_done_callback(self.axis_flipped_callback)
 
+    def axis_flipped_callback(self, future):
+        result = future.result()
+        self.get_logger().info(f"Result of axis flip: {result.succes} \n{result.message}")
+        
 
 def main(args=None):
     rclpy.init(args=args)

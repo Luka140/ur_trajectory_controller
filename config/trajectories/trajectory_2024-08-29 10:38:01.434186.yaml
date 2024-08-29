@@ -1,0 +1,43 @@
+publisher_scaled_joint_trajectory_controller:
+  ros__parameters:
+
+    controller_name: "scaled_joint_trajectory_controller"
+
+    goal_names: ['pose0', 'pose1', 'pose2', 'pose3', 'pose4', 'pose5', 'pose6', 'pose7', 'pose8']
+    pose0:
+      positions: [-1.5708019356e+00,-1.5707966208e+00,-1.5707928821e+00, 1.5707904458e+00, 1.1279331118e-05,-1.1448498384e-06]
+    pose1:
+      positions: [-2.8715274296,-1.9358538389,-0.0171440166, 1.5711330175, 0.3727930874, 0.4326966614]
+    pose2:
+      positions: [-2.8707297287,-1.6678643107,-0.210299806 , 1.5711647272, 0.3727833539, 0.3561644852]
+    pose3:
+      positions: [-2.9567429505,-1.2999998331,-0.4372336668, 1.5710992575, 0.3214510411, 0.3004277855]
+    pose4:
+      positions: [-3.1366227112,-0.7403869867,-0.8574520451, 1.5711488962, 0.2837041855, 0.2653058797]
+    pose5:
+      positions: [-3.0462590657,-0.7417342603,-0.9489394409, 1.5711516023, 0.2836656868, 0.263130784 ]
+    pose6:
+      positions: [-2.8851169548,-1.2299479604,-0.664970414 , 1.5707190752, 0.2839264601, 0.3011172771]
+    pose7:
+      positions: [-2.7929582081,-1.5880133033,-0.4180352014, 1.5706975937, 0.3116436899, 0.3548160553]
+    pose8:
+      positions: [-2.7326826535,-1.9669393659,-0.0587081236, 1.5707458138, 0.4106273949, 0.4294445574]
+
+    movement_duration: [8, 0]
+
+    joints:
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint
+      - shoulder_pan_joint
+
+    check_starting_point: true
+    starting_point_limits:
+      shoulder_lift_joint: [-1.7, -1.4]
+      elbow_joint: [-1.7, -1.4]
+      wrist_1_joint: [-1.7, -1.4]
+      wrist_2_joint: [1.4, 1.7]
+      wrist_3_joint: [-0.2, 0.2]
+      shoulder_pan_joint: [-0.2, 0.2]
