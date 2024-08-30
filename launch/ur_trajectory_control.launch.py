@@ -34,15 +34,13 @@ def generate_launch_description():
         package="keyboard",
         executable="keyboard"
     )
-
-    # flange_tool_tf = Node(package="tf2_ros",
-    #                       executable='static_transform_publisher',
-      #                     arguments= ["0", "0", "0", "0", "0", "-1.570796", "flange", "scancontrol"])
+    
+    # Obtained from the CAD model 
     offset =[28.5, 42.01, 32.01]
     
     flange_tool_tf = Node(package="tf2_ros",
                           executable='static_transform_publisher',
-                          arguments= [f'{offset[0]/1000}', f'{offset[1]/1000}', f'{offset[2]/1000}', '0.0', '0.0', "-1.570796", "flange", "scancontrol"])
+                          arguments= [f'{offset[0]/1000}', f'{offset[1]/1000}', f'{offset[2]/1000}', '0.0', '3.14', "-1.570796", "flange", "scancontrol"])
 
     ld = LaunchDescription([controller])
     ld.add_action(tester)

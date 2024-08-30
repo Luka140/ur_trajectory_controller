@@ -11,6 +11,7 @@ from rcl_interfaces.msg import ParameterDescriptor
 from std_msgs.msg import Empty
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from sensor_msgs.msg import JointState
+from std_msgs.msg import String
 
 import numpy as np
 
@@ -23,13 +24,15 @@ class UrController(Node):
         # Declare all parameters
         self.declare_parameter("controller_name", "position_trajectory_controller")
         self.declare_parameter("goal_names", [""])
+        self.declare_parameter("move_types", [""])
         self.declare_parameter('movement_duration', [6, 0])
         self.declare_parameter("joints", [""])
         self.declare_parameter("check_starting_point", False)
 
         # Read parameters
-        controller_name             = self.get_parameter("controller_name").value
+        self.controller_name        = self.get_parameter("controller_name").value
         goal_names                  = self.get_parameter("goal_names").value
+        move_types                  = self.get_parameter("move_types").value 
         self.movement_duration      = self.get_parameter("movement_duration").value
         self.joints                 = self.get_parameter("joints").value
         self.check_starting_point   = self.get_parameter("check_starting_point").value
@@ -59,10 +62,17 @@ class UrController(Node):
         # Read all positions from parameters
         self.goals = self.read_waypoint_params(goal_names)
 
+        
+        if self.controller_name.strip() in 'ur_script':
+            self.ur_script_interface = self.create_publisher(String,'/urscript_interface/script_command', 1)
+            self.move_types = []
+
         # Setup trajectory publisher and the trigger subscriber 
-        publish_topic = f"/{controller_name}/joint_trajectory"
-        subscriber_topic = f"/{controller_name}/trigger_move"
-        self.publisher_traj                 = self.create_publisher(JointTrajectory, publish_topic, 1)
+        if self.controller_name in ('position_trajectory_controller', 'joint_trajectory_controller', 'scaled_joint_trajectory_controller'):
+            publish_topic = f"/{self.controller_name}/joint_trajectory"
+            self.publisher_traj = self.create_publisher(JointTrajectory, publish_topic, 1)
+
+        subscriber_topic = f"/{self.controller_name}/trigger_move"
         self.subscriber_execute_next_move   = self.create_subscription(Empty, subscriber_topic, self.execute_next_move, 1)
         
         # Counter to keep track of which goal within the list is next. Goals will loop infinitely
@@ -116,9 +126,17 @@ class UrController(Node):
                 point.effort = values
                 one_ok = True
 
+            move_type_specified, move_type = get_sub_param("move_type")
+
             if one_ok:
                 point.time_from_start = Duration(sec=self.movement_duration[0], nanosec=self.movement_duration[1])
                 goals.append(point)
+                if 'ur_script' in self.controller_name:
+                    if move_type.strip() in ('movej', 'movel', 'movep'):
+                        self.move_types.append(move_type.strip())
+                    else:
+                        self.get_logger().warn('Move type not valid for URScript')
+
                 self.get_logger().info(f'Goal "{name}" has definition {point}')
 
             else:
@@ -138,10 +156,19 @@ class UrController(Node):
         return goals
 
     def execute_next_move(self, msg):
+        if self.check_starting_point and not self.joint_state_msg_received:
+            self.get_logger().warn(
+                'Start configuration could not be checked! Check "joint_state" topic!'
+            )
+            return 
+        
+        if not self.starting_point_ok:
+            self.get_logger().warn("Start configuration is not within configured limits!")
+            return 
 
-        if self.starting_point_ok:
-            self.get_logger().info(f"Sending goal {self.goals[self.goal_indexer]}.")
-
+        
+        self.get_logger().info(f"Sending goal {self.goals[self.goal_indexer]}.")
+        if not 'ur_script' in self.controller_name:
             traj = JointTrajectory()
             traj.joint_names = self.joints
             traj.points.append(self.goals[self.goal_indexer])
@@ -149,17 +176,36 @@ class UrController(Node):
 
             self.goal_indexer += 1
             self.goal_indexer %= len(self.goals)
+            return 
+        
+        # If UR script commands are used
+        move = self.move_types[self.goal_indexer]
+        goal = self.goals[self.goal_indexer]
+        cmd = f'{move}('
+        if 'movej' in move:
+            cmd += f'q={self.goals[self.goal_indexer]}, '
+        if 'movel' in move or 'movep' in move:
+            cmd += f'pose={self.goals[self.goal_indexer]}, '
+        
+        if len(goal.accelerations) > 0:
+            cmd += f'a={np.mean(goal.accelerations)}, '
+        if len(goal.velocities) > 0:
+            cmd += f'v={np.mean(goal.accelerations)}, '
+        
+        if (('movej' in move) or ('movel' in move)) and goal.time_from_start > 0:
+            cmd += f't={goal.time_from_start}'
 
-        elif self.check_starting_point and not self.joint_state_msg_received:
-            self.get_logger().warn(
-                'Start configuration could not be checked! Check "joint_state" topic!'
-            )
-        else:
-            self.get_logger().warn("Start configuration is not within configured limits!")
+        # TODO implement blend radius 
+        
+        cmd += ')'
+        command = String(data=cmd)
+        self.ur_script_interface.publish(command)
+
+            
 
     def joint_state_callback(self, msg):
 
-        if not self.joint_state_msg_received:
+        if not self.joint_state_msg_received or not self.starting_point_ok:
 
             # check start state
             limit_exceeded = [False] * len(msg.name)

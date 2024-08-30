@@ -8,10 +8,8 @@ Panels:
         - /Status1
         - /RobotModel1/Description Topic1
         - /PointCloud21
-        - /PointCloud21/Status1
         - /PointCloud21/Topic1
         - /PointCloud22
-        - /PointCloud22/Status1
       Splitter Ratio: 0.5
     Tree Height: 256
   - Class: rviz_common/Selection
@@ -144,13 +142,13 @@ Visualization Manager:
       Class: rviz_default_plugins/PointCloud2
       Color: 255; 255; 255
       Color Transformer: Intensity
-      Decay Time: 360
+      Decay Time: 10
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: -999999
+      Max Intensity: 1
       Min Color: 0; 0; 0
-      Min Intensity: 999999
+      Min Intensity: 1
       Name: PointCloud2
       Position Transformer: XYZ
       Selectable: true
@@ -247,25 +245,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 0.41528141498565674
+      Distance: 1.0892181396484375
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.7692797183990479
-        Y: 0.12161879986524582
-        Z: -0.1307123303413391
+        X: -0.6748843789100647
+        Y: 0.02947424352169037
+        Z: -0.13647310435771942
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: -0.19960227608680725
+      Pitch: 0.19539763033390045
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.6685903072357178
+      Yaw: 3.8135931491851807
     Saved: ~
 Window Geometry:
   Displays:
