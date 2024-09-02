@@ -1,0 +1,81 @@
+publisher_scaled_joint_trajectory_controller:
+  ros__parameters:
+
+    controller_name: "ur_script"
+
+    goal_names: ['pose0', 'pose1', 'pose2', 'pose3', 'pose4', 'pose5', 'pose6', 'pose7']
+    pose0:
+      positions: [-1.5708107060e+00,-1.5707834125e+00,-1.5707872066e+00, 1.5707896709e+00, 2.1120328626e-06,-5.3206392629e-06]
+      move_type: "movej"
+      velocity: 0.15
+      acceleration: 0.1
+      movement_duration: [0, 0]
+
+    pose1:
+      positions: [-2.8303658924,-2.3863519907, 0.4485865313, 1.5691678166, 0.1450702906, 0.2566297323]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+      movement_duration: [60, 0]
+
+    pose2:
+      positions: [-2.8848663292,-1.4611086369,-0.317283718 , 1.5693702817, 0.1448496222, 0.162228094 ]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+      movement_duration: [20, 0]
+
+    pose3:
+      positions: [-2.9452835045,-1.0304276705,-0.6132817787, 1.5691745043, 1.1212329268,-0.003335921 ]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+      movement_duration: [20, 0]
+
+    pose4:
+      positions: [-2.7959552727e+00,-1.1455301881e+00,-7.8313206256e-01, 1.5695840716e+00, 1.1212889671e+00, 2.7918668056e-04]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+      movement_duration: [20, 0]
+
+    pose5:
+      positions: [-2.9156929932,-0.807893008 ,-0.8672473472, 1.5692045569, 2.0095515966,-0.3695839087]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+
+      movement_duration: [20, 0]
+
+    pose6:
+      positions: [-2.7039821587,-1.6907499313,-0.3422372025, 1.5690682292, 2.7699045181,-0.5790377776]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+
+      movement_duration: [60, 0]
+
+    pose7:
+      positions: [-1.5708028579e+00,-1.5708284974e+00,-1.5707930531e+00, 1.5708106399e+00,-1.0726512020e-05, 3.5830415236e-06]
+      move_type: "movej"
+      velocity: 0.15
+      acceleration: 0.1
+
+      movement_duration: [10, 0]
+
+    joints:
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint
+      - shoulder_pan_joint
+
+    check_starting_point: true
+    starting_point_limits:
+      shoulder_lift_joint: [-1.7, -1.4]
+      elbow_joint: [-1.7, -1.4]
+      wrist_1_joint: [-1.7, -1.4]
+      wrist_2_joint: [1.4, 1.7]
+      wrist_3_joint: [-0.2, 0.2]
+      shoulder_pan_joint: [-0.2, 0.2]

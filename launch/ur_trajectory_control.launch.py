@@ -9,8 +9,9 @@ def generate_launch_description():
 
     pkg = "ur_trajectory_controller"
     
-    # Remember to build any new trajectory that was recorded before trying to launch it
-    path_config = "trajectory_2024-08-29 10:38:01.434186.yaml"
+    #   ==================== Remember to build any new trajectory that was recorded before trying to launch it =====================
+    # path_config = "trajectory_2024-08-29 10:38:01.434186.yaml"
+    path_config = 'trajectory_2024-09-02 12:22:45.546269.yaml'
 
     position_goals = PathJoinSubstitution(
         [FindPackageShare(f"{pkg}"), "config/trajectories", path_config]
@@ -38,9 +39,10 @@ def generate_launch_description():
     # Obtained from the CAD model 
     offset =[28.5, 42.01, 32.01]
     
+    # This transform should be obtained from a calibration at some point. 
     flange_tool_tf = Node(package="tf2_ros",
                           executable='static_transform_publisher',
-                          arguments= [f'{offset[0]/1000}', f'{offset[1]/1000}', f'{offset[2]/1000}', '0.0', '3.14', "-1.570796", "flange", "scancontrol"])
+                          arguments= [f'{offset[0]/1000}', f'{offset[1]/1000}', f'{offset[2]/1000}', '0.0', '3.141592654', "-1.570796327", "flange", "scancontrol"])
 
     ld = LaunchDescription([controller])
     ld.add_action(tester)

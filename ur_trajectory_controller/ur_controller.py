@@ -24,18 +24,16 @@ class UrController(Node):
         # Declare all parameters
         self.declare_parameter("controller_name", "position_trajectory_controller")
         self.declare_parameter("goal_names", [""])
-        self.declare_parameter("move_types", [""])
-        self.declare_parameter('movement_duration', [6, 0])
+        self.declare_parameter("autonomous_execution", True)
         self.declare_parameter("joints", [""])
         self.declare_parameter("check_starting_point", False)
 
         # Read parameters
         self.controller_name        = self.get_parameter("controller_name").value
         goal_names                  = self.get_parameter("goal_names").value
-        move_types                  = self.get_parameter("move_types").value 
-        self.movement_duration      = self.get_parameter("movement_duration").value
         self.joints                 = self.get_parameter("joints").value
         self.check_starting_point   = self.get_parameter("check_starting_point").value
+        self.autonomous_execution   = self.get_parameter('autonomous_execution').value
         self.starting_point = {}
 
         if self.joints is None or len(self.joints) == 0:
@@ -43,6 +41,17 @@ class UrController(Node):
 
         if goal_names is None or len(goal_names) == 0:
             raise Exception('"goal_names" parameter is not set! - There are no waypoints available.')
+        
+        # If controlled in urscript 
+        if 'ur_script' in self.controller_name:
+            publish_topic = '/urscript_interface/script_command'
+            self.ur_script_interface = self.create_publisher(String,publish_topic, 1)
+            self.move_types = []
+        
+        # Setup trajectory publisher and the trigger subscriber 
+        if self.controller_name in ('position_trajectory_controller', 'joint_trajectory_controller', 'scaled_joint_trajectory_controller'):
+            publish_topic = f"/{self.controller_name}/joint_trajectory"
+            self.publisher_traj = self.create_publisher(JointTrajectory, publish_topic, 1)
 
         # If desired check whether the starting point is valid/safe position
         if self.check_starting_point:
@@ -61,16 +70,6 @@ class UrController(Node):
 
         # Read all positions from parameters
         self.goals = self.read_waypoint_params(goal_names)
-
-        
-        if self.controller_name.strip() in 'ur_script':
-            self.ur_script_interface = self.create_publisher(String,'/urscript_interface/script_command', 1)
-            self.move_types = []
-
-        # Setup trajectory publisher and the trigger subscriber 
-        if self.controller_name in ('position_trajectory_controller', 'joint_trajectory_controller', 'scaled_joint_trajectory_controller'):
-            publish_topic = f"/{self.controller_name}/joint_trajectory"
-            self.publisher_traj = self.create_publisher(JointTrajectory, publish_topic, 1)
 
         subscriber_topic = f"/{self.controller_name}/trigger_move"
         self.subscriber_execute_next_move   = self.create_subscription(Empty, subscriber_topic, self.execute_next_move, 1)
@@ -126,16 +125,32 @@ class UrController(Node):
                 point.effort = values
                 one_ok = True
 
-            move_type_specified, move_type = get_sub_param("move_type")
+    
+            # Specific to URscript commands
+            self.declare_parameter(f"{name}.move_type", "")
+            self.declare_parameter(f"{name}.velocity", 0.)
+            self.declare_parameter(f"{name}.acceleration", 0.)
+            self.declare_parameter(f"{name}.movement_duration", [0, 0])
+            move_type           = self.get_parameter(f"{name}.move_type").value
+            velocity_ur         = self.get_parameter(f"{name}.velocity").value
+            acceleration_ur     = self.get_parameter(f"{name}.acceleration").value
+            movement_duration   = self.get_parameter(f"{name}.movement_duration").value
 
             if one_ok:
-                point.time_from_start = Duration(sec=self.movement_duration[0], nanosec=self.movement_duration[1])
-                goals.append(point)
                 if 'ur_script' in self.controller_name:
                     if move_type.strip() in ('movej', 'movel', 'movep'):
                         self.move_types.append(move_type.strip())
                     else:
                         self.get_logger().warn('Move type not valid for URScript')
+
+                    if velocity_ur > 0.:
+                        point.velocities = [velocity_ur] * len(self.joints)
+                    if acceleration_ur > 0.:
+                        point.accelerations = [acceleration_ur] * len(self.joints)
+
+                if movement_duration[0] > 0 or movement_duration[1] > 0:
+                    point.time_from_start = Duration(sec=movement_duration[0], nanosec=movement_duration[1])
+                goals.append(point)
 
                 self.get_logger().info(f'Goal "{name}" has definition {point}')
 
@@ -166,7 +181,6 @@ class UrController(Node):
             self.get_logger().warn("Start configuration is not within configured limits!")
             return 
 
-        
         self.get_logger().info(f"Sending goal {self.goals[self.goal_indexer]}.")
         if not 'ur_script' in self.controller_name:
             traj = JointTrajectory()
@@ -174,34 +188,47 @@ class UrController(Node):
             traj.points.append(self.goals[self.goal_indexer])
             self.publisher_traj.publish(traj)
 
-            self.goal_indexer += 1
-            self.goal_indexer %= len(self.goals)
-            return 
+        else: 
+            # If UR script commands are used
+            if self.autonomous_execution:  
+                command_str = ''
+                for i in range(len(self.goals)):          
+                    command_str += f'  {self.create_ur_script_str(i)}\n'
+            else:
+                command_str = f'  {self.create_ur_script_str(self.goal_indexer)}\n'
+            command = String(data=f'def move():\n{command_str}\nend')
+            self.ur_script_interface.publish(command)
+
+        self.goal_indexer += 1
+        self.goal_indexer %= len(self.goals)
         
-        # If UR script commands are used
-        move = self.move_types[self.goal_indexer]
-        goal = self.goals[self.goal_indexer]
+        return 
+
+    def create_ur_script_str(self, index):
+        move = self.move_types[index]
+        goal = self.goals[index]
+        # The URScript interface uses a different joint order than joint_states so the positions need to be reordered
+        position = [goal.positions[-1], *goal.positions[:-1]]
         cmd = f'{move}('
+        pos = np.array2string(np.array(position), separator=", ", max_line_width=10**3, formatter={'float_kind':lambda x: "%.8f" % x})
         if 'movej' in move:
-            cmd += f'q={self.goals[self.goal_indexer]}, '
+            cmd += f'{pos}, '
         if 'movel' in move or 'movep' in move:
-            cmd += f'pose={self.goals[self.goal_indexer]}, '
+            cmd += f'{pos}, '
         
         if len(goal.accelerations) > 0:
             cmd += f'a={np.mean(goal.accelerations)}, '
         if len(goal.velocities) > 0:
-            cmd += f'v={np.mean(goal.accelerations)}, '
+            cmd += f'v={np.mean(goal.velocities)}, '
         
-        if (('movej' in move) or ('movel' in move)) and goal.time_from_start > 0:
-            cmd += f't={goal.time_from_start}'
+        if (('movej' in move) or ('movel' in move)) and (goal.time_from_start.sec > 0 or goal.time_from_start.nanosec > 0):
+            cmd += f't={goal.time_from_start.sec}, '
+            # cmd += f't=0, '
 
         # TODO implement blend radius 
-        
+        cmd += 'r=0'
         cmd += ')'
-        command = String(data=cmd)
-        self.ur_script_interface.publish(command)
-
-            
+        return cmd 
 
     def joint_state_callback(self, msg):
 
