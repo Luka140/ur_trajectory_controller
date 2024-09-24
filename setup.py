@@ -29,6 +29,7 @@ setup(
             f'ur_controller = {package_name}.ur_controller:main',
             f'ur_trigger = {package_name}.ur_traj_trigger_tester:main',
             f'ur_trajectory_recorder = {package_name}.ur_trajectory_recorder:main',
+            f'coordinator = {package_name}.surface_scan_coordinator:main',
         ],
     },
 )

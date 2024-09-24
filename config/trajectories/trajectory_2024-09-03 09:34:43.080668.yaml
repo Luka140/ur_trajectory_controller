@@ -1,0 +1,92 @@
+publisher_scaled_joint_trajectory_controller:
+  ros__parameters:
+
+    controller_name: "ur_script"
+
+    goal_names: ['pose0', 'pose1', 'pose2', 'pose3', 'pose4', 'pose5', 'pose6', 'pose7', 'pose8', 'pose9']
+    pose0:
+      positions: [-2.5803844414,-2.4804828405,-1.2823688787, 1.5769093752, 0.0352897905, 1.1008526921]
+      move_type: "movej"
+      velocity: 0.15
+      acceleration: 0.1
+      movement_duration: [6, 0]
+
+    pose1:
+      positions: [-2.9941242657,-2.1248069763,-1.1850626242, 1.5757725358,-0.1188501517, 1.0991105795]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+      movement_duration: [6, 0]
+
+    pose2:
+      positions: [-2.9531894169,-1.6699859738,-1.6915892086, 1.9477673531,-0.1188423316, 0.7252012253]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+      movement_duration: [6, 0]
+
+    pose3:
+      positions: [-3.0583341561,-1.1842369318,-1.8833987675, 2.6100031137, 0.1103741743, 0.3173623681]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+      movement_duration: [6, 0]
+
+    pose4:
+      positions: [-3.0486254654,-1.1724274397,-1.8838526211, 2.9020438671, 0.1041919373, 0.1214951582]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+      movement_duration: [6, 0]
+
+    pose5:
+      positions: [-3.0219204865,-1.3555838585,-1.7144677601, 3.2991648197, 0.105700735 ,-0.1019257228]
+      move_type: "movej"
+      velocity: 0.05
+      acceleration: 0.1
+      movement_duration: [6, 0]
+
+    pose6:
+      positions: [-2.9818737469,-1.6324042797,-1.7150730095, 3.8211562395, 0.07593996  ,-0.2186771552]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+      movement_duration: [6, 0]
+
+    pose7:
+      positions: [-2.9712868176,-2.0190531731,-1.4982686256, 4.4367847919, 0.0759629041,-0.2077350299]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+      movement_duration: [6, 0]
+
+    pose8:
+      positions: [-2.3616712532,-2.3808953524,-1.4984764297, 4.4367810726, 0.0759754017,-0.2308808009]
+      move_type: "movel"
+      velocity: 0.05
+      acceleration: 0.1
+      movement_duration: [6, 0]
+
+    pose9:
+      positions: [-1.5707986967e+00,-1.5708211660e+00,-1.5707891757e+00, 1.5708046913e+00, 1.3457045762e-05, 2.1339447230e-06]
+      move_type: "movej"
+      velocity: 0.15
+      acceleration: 0.1
+      movement_duration: [6, 0]
+
+    joints:
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint
+      - shoulder_pan_joint
+
+    check_starting_point: true
+    starting_point_limits:
+      shoulder_lift_joint: [-1.7, -1.4]
+      elbow_joint: [-1.7, -1.4]
+      wrist_1_joint: [-1.7, -1.4]
+      wrist_2_joint: [1.4, 1.7]
+      wrist_3_joint: [-0.2, 0.2]
+      shoulder_pan_joint: [-0.2, 0.2]

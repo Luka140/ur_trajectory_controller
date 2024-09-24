@@ -37,13 +37,15 @@ class PathRecorder(Node):
             self.controller  = 'scaled_joint_trajectory_controller'
 
         # Velocities and accelerations in rad/s 
-        self.default_velocity = {'movej':0.15,
-                                 'movel':0.05,
-                                 'movep':0.05
+
+        # By default set to zero, in this case the velocities are determined by movement duration.
+        self.default_velocity = {'movej':0.0,   #0.15,
+                                 'movel':0.0,   #0.05,
+                                 'movep':0.0   #0.05
                                  }
-        self.default_acceleration = {'movej':0.1,
-                                     'movel':0.1,
-                                     'movep':0.1
+        self.default_acceleration = {'movej': 0.0,   #:0.1,
+                                     'movel': 0.0,   #:0.1,
+                                     'movep': 0.0   #:0.1
                                     }
         
         self.default_movement_duration = 10
@@ -123,7 +125,10 @@ class PathRecorder(Node):
                     f.write(f'{indent*3}acceleration: {self.default_acceleration[self.trajectory[i][1]]}\n')
 
                 # Movement duration
-                f.write(f'{indent*3}movement_duration: [{int(self.default_movement_duration)}, {int((self.default_movement_duration - int(self.default_movement_duration))/10**9)}]\n\n')
+                f.write(f'{indent*3}movement_duration: [{int(self.default_movement_duration)}, {int((self.default_movement_duration - int(self.default_movement_duration))/10**9)}]\n')
+
+                # Laser turned off by default
+                f.write(f'{indent*3}laser_on: false\n\n')
 
             # Joint names
             f.write(f'{indent*2}joints:\n')
