@@ -10,10 +10,13 @@ def generate_launch_description():
     pkg = "ur_trajectory_controller"
     
     #   ==================== Remember to build any new trajectory that was recorded before trying to launch it =====================
+    # path_config = 'trajectory_find_rad.yaml'
     # path_config = 'trajectory_calibration.yaml'
     # path_config = 'trajectory_calibration_extended.yaml'
     # path_config = 'trajectory_calibration_inversion.yaml'
-    path_config = 'trajectory_repeatability_line.yaml'
+    # path_config = 'trajectory_calibration_3.yaml'
+    path_config = 'trajectory_calibration_fussball.yaml'
+    # path_config = 'trajectory_repeatability_line.yaml'
 
     position_goals = PathJoinSubstitution(
         [FindPackageShare(f"{pkg}"), "config/trajectories", path_config]

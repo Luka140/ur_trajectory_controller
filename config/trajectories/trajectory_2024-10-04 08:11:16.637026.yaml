@@ -1,0 +1,7 @@
+publisher_scaled_joint_trajectory_controller:
+  ros__parameters:
+
+    controller_name: "ur_script"
+
+    goal_names: []
+    joints:

@@ -3,7 +3,6 @@ from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration,PythonExpression
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
@@ -16,7 +15,10 @@ def generate_launch_description():
     pkg = "ur_trajectory_controller"
     
     #   ==================== Remember to build any new trajectory that was recorded before trying to launch it =====================
-    path_config = 'trajectory_scan_turbine_blade2.yaml'
+    # path_config = 'trajectory_scan_turbine_blade2.yaml'
+    # path_config = 'trajectory_blade_demo_grip.yaml'
+    # path_config = 'trajectory_calibration_fussball.yaml'
+    path_config = 'trajectory_test_plate.yaml'
 
     position_goals = PathJoinSubstitution(
         [FindPackageShare(f"{pkg}"), "config/trajectories", path_config]
@@ -36,7 +38,8 @@ def generate_launch_description():
         executable='coordinator',
         name='publisher_scaled_joint_trajectory_controller',
         parameters=[position_goals, {
-            'autonomous_execution': False
+            'loop_on_service': True,
+            'auto_loop': False
         }],
     )
 
@@ -47,6 +50,7 @@ def generate_launch_description():
             [os.path.join(get_package_share_directory(pkg),'launch','ur_driver.launch.py')])
     )
 
+    # Combines collected pointclouds 
     lls_pcl = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory('lls_processing'),'launch', 'lls_processing.launch.py')])

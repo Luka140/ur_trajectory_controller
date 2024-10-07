@@ -1,0 +1,128 @@
+publisher_scaled_joint_trajectory_controller:
+  ros__parameters:
+
+    controller_name: "ur_script"
+
+    goal_names: ['pose00', 'pose0', 'pose1', 'pose2', 'pose3', 'pose4', 'pose5', 'pose6', 'pose7', 'pose8', 'pose9', 'pose90', 'pose10']
+    
+    pose00: # move can be removed later - temporary insert to avoid hitting the turbine blade 
+      positions: [-1.5872107944884242, -1.4228311777114868, -1.7147118053831996, 1.570662498474121, -3.141488854085104, 1.459643840789795]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+    
+    pose0:
+      positions: [-2.8420555554,-1.8990043521,-1.5730062924, 1.0906193852,-3.1399749199, 1.1124367833]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+
+    pose1:
+      positions: [-3.0047955952,-1.7614017725,-1.9349652253, 1.2396550536,-3.0640311877, 1.0624399185]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+
+    pose2:
+      positions: [-2.7400607548,-2.6004145384,-0.1646049303, 1.2396966815,-3.0640260617, 1.0631293178]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+
+    pose3:
+      positions: [-2.7420141659,-2.0250068665,-1.553765506 , 0.7777419508,-2.9273389022, 1.8441876411]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+
+    pose4:
+      positions: [-2.518295332 ,-2.3234239817,-0.8681550604, 0.6097674608,-3.193198363 , 1.8736862898]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+
+    pose5:
+      positions: [-2.2398267231,-2.5937128544,-0.5876093072, 0.2928907245,-3.200286905 , 2.2007941008]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+
+    pose6:
+      positions: [-2.8712256871,-2.5538509369,-0.603763805 , 0.3696100861,-3.1153542439, 2.9271742821]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+
+    pose7:
+      positions: [-2.9208119831,-2.2423954725,-0.5768333179,-3.7379651229, 0.0224172892, 2.4436232567]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+
+    pose8:
+      positions: [-2.9204640351,-1.9189100027,-1.0089502078,-3.4097500483, 0.0224114764, 1.7946802855]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+
+    pose9:
+      positions: [-2.8917528592,-1.9285592437,-1.0100449723,-2.9206209342, 0.0224787883, 0.9941556871]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+
+    pose90: # move can be removed later - temporary insert to avoid hitting the turbine blade 
+      positions: [-2.705165525475973, -2.489342212677002, -1.0903931123069306, -2.3003576437579554, -0.4015253225909632, -0.4542015234576624]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+ 
+
+    pose10:
+      positions: [-1.5708423275e+00,-1.5708702326e+00,-1.5708004354e+00, 1.5708354831e+00,-3.1415742318e+00, 2.6853031486e-06]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [10, 0]
+      laser_on: false
+
+    joints:
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint
+      - shoulder_pan_joint
+
+    check_starting_point: true
+    starting_point_limits:
+      shoulder_lift_joint: [-1.7, -1.4]
+      elbow_joint: [-1.7, -1.4]
+      wrist_1_joint: [-1.7, -1.4]
+      wrist_2_joint: [1.4, 1.7]
+      wrist_3_joint: [-3.2, -3.]
+      shoulder_pan_joint: [-0.2, 0.2]
