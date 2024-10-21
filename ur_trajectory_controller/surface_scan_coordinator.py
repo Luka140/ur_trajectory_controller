@@ -1,6 +1,6 @@
 import rclpy 
 from rclpy.node import Node
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 
 from rcl_interfaces.msg import ParameterDescriptor
@@ -61,7 +61,7 @@ class MeasurementCoordinator(Node):
 
         self.startup_delay = 5
         if self.loop_on_service:
-            self.create_service(RequestPCL, 'execute_loop', self.trigger_loop, callback_group=MutuallyExclusiveCallbackGroup())
+            self.create_service(RequestPCL, 'execute_loop', self.trigger_loop, callback_group=ReentrantCallbackGroup())#, callback_group=MutuallyExclusiveCallbackGroup())
 
         else:
             self.get_logger().info(f"Measurement coordinator initialized, starting in {self.startup_delay} seconds")
@@ -172,10 +172,17 @@ def main(args=None):
 
     coordinator = MeasurementCoordinator()
     executor = MultiThreadedExecutor()
-
-    rclpy.spin(coordinator, executor=executor)
+    try:
+        rclpy.spin(coordinator, executor=executor)
+    except KeyboardInterrupt:
+        pass 
     coordinator.destroy_node()
-    rclpy.shutdown()
+
+    # Avoid stack trace 
+    try:
+        rclpy.shutdown()
+    except rclpy._rclpy_pybind11.RCLError:
+        pass 
 
 
 if __name__ == '__main__':

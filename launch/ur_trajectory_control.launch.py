@@ -15,7 +15,8 @@ def generate_launch_description():
     # path_config = 'trajectory_calibration_extended.yaml'
     # path_config = 'trajectory_calibration_inversion.yaml'
     # path_config = 'trajectory_calibration_3.yaml'
-    path_config = 'trajectory_calibration_fussball.yaml'
+    # path_config = 'trajectory_calibration_fussball.yaml'
+    path_config = "trajectory_test_plate_vertical2.yaml"
     # path_config = 'trajectory_repeatability_line.yaml'
 
     position_goals = PathJoinSubstitution(

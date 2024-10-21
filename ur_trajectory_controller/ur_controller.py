@@ -275,10 +275,17 @@ def main(args=None):
 
     ur_controller = UrController()
     executor = MultiThreadedExecutor()
-
-    rclpy.spin(ur_controller, executor=executor)
+    try:
+        rclpy.spin(ur_controller, executor=executor)
+    except KeyboardInterrupt:
+        pass 
     ur_controller.destroy_node()
-    rclpy.shutdown()
+
+    # Avoid stack trace 
+    try:
+        rclpy.shutdown()
+    except rclpy._rclpy_pybind11.RCLError:
+        pass 
 
 
 if __name__ == '__main__':

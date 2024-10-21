@@ -1,4 +1,4 @@
-publisher_scaled_joint_trajectory_controller:
+/**: # This will put all the parameters in every node:
   ros__parameters:
 
     controller_name: "ur_script"

@@ -107,7 +107,8 @@ class PathRecorder(Node):
         indent = '  '
         with open(filename, 'w') as f:
             # Header
-            f.write('publisher_scaled_joint_trajectory_controller:\n')
+            # f.write('publisher_scaled_joint_trajectory_controller:\n')
+            f.write('/**: # This will put all the parameters in every node\n')
             f.write(f'{indent}ros__parameters:\n\n')
             f.write(f'{indent*2}controller_name: "{self.controller}"\n\n')
 
@@ -151,7 +152,12 @@ def main(args=None):
 
     rclpy.spin(recorder)
     recorder.destroy_node()
-    rclpy.shutdown()
+    
+    # Avoid stack trace 
+    try:
+        rclpy.shutdown()
+    except rclpy._rclpy_pybind11.RCLError:
+        pass 
 
 
 if __name__ == '__main__':

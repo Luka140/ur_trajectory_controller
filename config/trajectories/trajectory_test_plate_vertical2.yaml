@@ -1,4 +1,4 @@
-/**: # This will put all the parameters in every node
+/**: # This will put all the parameters in every node:
   ros__parameters:
 
     controller_name: "ur_script"
@@ -9,36 +9,46 @@
       move_type: "movej"
       velocity: 0.0
       acceleration: 0.0
-      movement_duration: [8, 0]
+      movement_duration: [6, 0]
       laser_on: false
 
     # pose1:
-    #   positions: [-2.634635110894674, -1.665071964263916, -0.41134806097064214, 1.5718438625335693, -0.4391058127032679, -1.5892208258258265]
+    #   positions: [-3.181547781030172, -1.0639009475708008, 1.1398395734974365, 1.776379942893982, 0.17553919553756714, -1.6311925093280237]
     #   move_type: "movel"
     #   velocity: 0.0
     #   acceleration: 0.0
     #   movement_duration: [3, 0]
     #   laser_on: false
 
-    # This position 1 is a bit further along the plate 
+
     pose1:
-      positions: [-2.686564107934469, -1.4802061319351196, -0.5443384212306519, 1.5714826583862305, -0.4374921957599085, -1.5878546873675745]
-      move_type: "movel"
+      positions: [-3.221604963342184, -0.931688666343689, 1.0488111215778808, 1.9143717288970947, 0.18058116734027863, -1.7009580771075647]
+      move_type: "movej"
       velocity: 0.0
       acceleration: 0.0
       movement_duration: [3, 0]
       laser_on: false
+      
+
+    # pose2:
+    #   positions: [-3.103813787499899, -1.1417617797851562, 1.1399637895771484, 1.7764325141906738, 0.17551295459270477, -1.6311033407794397]
+    #   move_type: "movel"
+    #   velocity: 0.0
+    #   acceleration: 0.0
+    #   movement_duration: [45, 0]
+    #   laser_on: true
+
 
     pose2:
-      positions: [-2.7375599346556605, -1.3198778629302979, -0.6536412996104737, 1.5713738203048706, -0.4363163153277796, -1.5869296232806605]
+      positions: [-3.1473118267455042, -1.010880708694458, 1.0537745195576171, 1.9144151210784912, 0.18053172528743744, -1.7008960882769983]
       move_type: "movel"
       velocity: 0.0
       acceleration: 0.0
-      movement_duration: [45, 0]
+      movement_duration: [40, 0]
       laser_on: true
 
     pose3:
-      positions: [-2.4341592751,-1.6158434987,-0.6936929268, 1.5712497234,-0.0945872466,-1.5846020857]
+      positions: [-2.781944891015524, -1.455631136894226, 1.1318301397510986, 1.7792255878448486, 0.175400510430336, -1.6336897055255335]
       move_type: "movel"
       velocity: 0.0
       acceleration: 0.0
@@ -50,7 +60,7 @@
       move_type: "movej"
       velocity: 0.0
       acceleration: 0.0
-      movement_duration: [8, 0]
+      movement_duration: [6, 0]
       laser_on: false
 
     joints:
