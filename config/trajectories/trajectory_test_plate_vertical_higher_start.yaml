@@ -9,20 +9,12 @@
       move_type: "movej"
       velocity: 0.0
       acceleration: 0.0
-      movement_duration: [6, 0]
+      movement_duration: [5, 0]
       laser_on: false
 
-    # OLD POS BUT SEEMS TO CLOSE TO PLATE 
-    # pose1:
-    #   positions: [-3.243925233880514, -0.9061861038208008, 1.045567198390625, 1.9142951965332031, 0.1805436611175537, -1.7010920683490198]
-    #   move_type: "movej"
-    #   velocity: 0.0
-    #   acceleration: 0.0
-    #   movement_duration: [3, 0]
-    #   laser_on: false
 
     pose1:
-      positions: [-3.235509534875387, -0.925960898399353, 1.056760235423706, 1.9024841785430908, 0.18012316524982452, -1.6892440954791468]
+      positions: [-3.2797795734801234, -0.863547146320343, 1.0388657289692382, 1.9143203496932983, 0.18053029477596283, -1.701042954121725]
       move_type: "movej"
       velocity: 0.0
       acceleration: 0.0
@@ -30,21 +22,13 @@
       laser_on: false
       
 
-    # OLD POS 
-    # pose2:
-      # positions: [-3.1473118267455042, -1.010880708694458, 1.0537745195576171, 1.9144151210784912, 0.18053172528743744, -1.7008960882769983]
-      # move_type: "movel"
-      # velocity: 0.0
-      # acceleration: 0.0
-      # movement_duration: [40, 0]
-      # laser_on: true
 
     pose2:
-      positions: [-3.146712442437643, -1.0215470790863037, 1.063575192088745, 1.9025697708129883, 0.1800989806652069, -1.6891396681415003]
+      positions: [-3.130122800866598, -1.02803373336792, 1.0536934572407226, 1.91440749168396, 0.18053172528743744, -1.7008865515338343]
       move_type: "movel"
       velocity: 0.0
       acceleration: 0.0
-      movement_duration: [40, 0]
+      movement_duration: [45, 0]
       laser_on: true
 
     pose3:
@@ -60,7 +44,7 @@
       move_type: "movej"
       velocity: 0.0
       acceleration: 0.0
-      movement_duration: [6, 0]
+      movement_duration: [5, 0]
       laser_on: false
 
     joints:

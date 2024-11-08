@@ -22,12 +22,11 @@ class UrController(Node):
         super().__init__('ur_controller')
 
         # Declare all parameters
-        self.declare_parameter("controller_name", "position_trajectory_controller")
+        self.declare_parameter("controller_name", "ur_script")
         self.declare_parameter("goal_names", [""])
         self.declare_parameter("autonomous_execution", True)
         self.declare_parameter("joints", [""])
         self.declare_parameter("check_starting_point", False)
-        self.declare_parameter('trigger_topic', '/trigger_move')
 
         # Read parameters
         self.controller_name        = self.get_parameter("controller_name").value
@@ -35,7 +34,6 @@ class UrController(Node):
         self.joints                 = self.get_parameter("joints").value
         self.check_starting_point   = self.get_parameter("check_starting_point").value
         self.autonomous_execution   = self.get_parameter('autonomous_execution').value
-        trigger_topic_next_move     = self.get_parameter('trigger_topic').get_parameter_value().string_value
 
         self.starting_point = {}
 
@@ -74,14 +72,15 @@ class UrController(Node):
         # Read all positions from parameters
         self.goals = self.read_waypoint_params(goal_names)
 
-        self.subscriber_execute_next_move = self.create_subscription(Empty, trigger_topic_next_move, self.execute_next_move, 1)
+        trigger_next_move_topic = "~/trigger_move"
+        self.subscriber_execute_next_move = self.create_subscription(Empty, trigger_next_move_topic, self.execute_next_move, 1)
         
         # Counter to keep track of which goal within the list is next. Goals will loop infinitely
         self.goal_indexer = 0
         
         self.get_logger().info(
             f"Publishing {len(goal_names)} goals on topic '{publish_topic}'"
-            f"Waiting for a message on  topic {trigger_topic_next_move} to execute the next move"
+            f"Waiting for a message on  topic {trigger_next_move_topic} to execute the next move"
         )
 
     def read_waypoint_params(self, goal_names) -> list[JointTrajectoryPoint]:

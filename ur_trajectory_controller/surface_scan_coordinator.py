@@ -14,26 +14,15 @@ class MeasurementCoordinator(Node):
     def __init__(self):
         super().__init__('measurement_coordinator')
 
-        self.declare_parameter('trigger_topic', '/trigger_move')
-        self.declare_parameter('laser_on_topic', '/laseron')
-        self.declare_parameter('laser_off_topic', '/laseroff')
-        self.declare_parameter('combine_pcl_topic', '/combine_pointclouds')
-        
         # Auto loop infinitely loops the trajectory
         self.declare_parameter('auto_loop', False)
         # loop_on_service allows the start of a loop to be triggered from the 'execute_loop' topic 
         self.declare_parameter('loop_on_service', False)
-
         self.declare_parameter("goal_names", [""])
 
-        trigger_topic       = self.get_parameter('trigger_topic').get_parameter_value().string_value
-        laser_on_topic      = self.get_parameter('laser_on_topic').get_parameter_value().string_value
-        laser_off_topic     = self.get_parameter('laser_off_topic').get_parameter_value().string_value
-        combine_cloud_topic = self.get_parameter('combine_pcl_topic').get_parameter_value().string_value
-
-        self.goal_names     = self.get_parameter("goal_names").value
-        self.loop           = self.get_parameter('auto_loop').value
-        self.loop_on_service  = self.get_parameter('loop_on_service').value
+        self.goal_names      = self.get_parameter("goal_names").value
+        self.loop            = self.get_parameter('auto_loop').value
+        self.loop_on_service = self.get_parameter('loop_on_service').value
 
         if self.loop_on_service and self.loop:
             raise ValueError("'auto_loop' and 'loop_on_service' cannot be True at the same time. ")
@@ -44,10 +33,10 @@ class MeasurementCoordinator(Node):
         # Obtain the duration and laser setting of each move from the config file
         self.durations, self.laser_setting = self.load_move_settings(self.goal_names)
 
-        self.move_trigger       = self.create_publisher(Empty, trigger_topic, 1)        # trigger the next move
-        self.laser_on_pub       = self.create_publisher(Empty, laser_on_topic, 1)       # turn on the LLS
-        self.laser_off_pub      = self.create_publisher(Empty, laser_off_topic, 1)      # turn off the LLS
-        self.combine_cloud      = self.create_client(RequestPCL, combine_cloud_topic)      # make mesh_constructor combine and store all pointclouds
+        self.move_trigger       = self.create_publisher(Empty,   '/ur_controller/trigger_move', 1)          # trigger the next move
+        self.laser_on_pub       = self.create_publisher(Empty,   '/laseron', 1)                             # turn on the LLS
+        self.laser_off_pub      = self.create_publisher(Empty,   '/laseroff', 1)                            # turn off the LLS
+        self.combine_cloud      = self.create_client(RequestPCL, '/pcl_constructor/combine_pointclouds')    # make pcl_constructor combine and store all pointclouds
         
         # Turn off laser initially
         self.laser_off_pub.publish(Empty())

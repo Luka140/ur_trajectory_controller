@@ -1,0 +1,70 @@
+/**: # This will put all the parameters in every node
+  ros__parameters:
+
+    controller_name: "ur_script"
+
+    goal_names: ['pose0', 'pose2', 'pose3', 'pose4', 'pose5']
+    pose0:
+      positions: [-2.5850821934,-1.0702486396, 0.5122016865, 1.7765358806, 1.5676715732,-1.7967570941]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [6, 0]
+      laser_on: false
+
+    # pose1:
+    #   positions: [-2.9516107521,-0.9927067637, 0.8013568121, 1.7773785114, 1.5684825182,-1.7971455256]
+    #   move_type: "movel"
+    #   velocity: 0.0
+    #   acceleration: 0.0
+    #   movement_duration: [10, 0]
+    #   laser_on: false
+
+    pose2:
+      positions: [-2.9974560223,-0.8637674153, 0.7181004006, 1.8429571867, 1.5682411075,-1.8629762332]
+      move_type: "movel"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [4, 0]
+      laser_on: false
+
+    pose3:
+      positions: [-3.0344881974,-0.7634906888, 0.6547335583, 1.8827635765, 1.5681005359,-1.9029739062]
+      move_type: "movel"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [30, 0]
+      laser_on: True
+
+    pose4:
+      positions: [-2.5717861138,-0.6824562907, 0.110670777 , 1.8810850739, 1.567208159 ,-1.9024942557]
+      move_type: "movel"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [4, 0]
+      laser_on: false
+
+    pose5:
+      positions: [-1.5707975628e+00,-1.5708056450e+00,-1.5708126903e+00, 1.5708180308e+00, 3.1415831804e+00,-1.6345974622e-05]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [6, 0]
+      laser_on: false
+
+    joints:
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint
+      - shoulder_pan_joint
+
+    check_starting_point: true
+    starting_point_limits:
+      shoulder_lift_joint: [-1.7, -1.4]
+      elbow_joint: [-1.7, -1.4]
+      wrist_1_joint: [-1.7, -1.4]
+      wrist_2_joint: [1.4, 1.7]
+      wrist_3_joint: [3., 3.2]
+      shoulder_pan_joint: [-0.2, 0.2]

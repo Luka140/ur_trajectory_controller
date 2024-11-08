@@ -27,6 +27,19 @@ def generate_launch_description():
                      }]
     )
 
+        # RViz Configuration
+    rviz_config_path = os.path.join(
+        get_package_share_directory(pkg),
+        'config',
+        'rviz_config.rviz'
+    )
+    rviz = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output={'both': 'log'},
+        arguments=['-d', rviz_config_path],
+    )
 
-    ld = LaunchDescription([driver, recorder, key_logger])
+    ld = LaunchDescription([driver, recorder, key_logger, rviz])
     return ld

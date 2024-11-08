@@ -16,7 +16,7 @@ def generate_launch_description():
     # Declare Launch Arguments for this package
     path_config_arg = DeclareLaunchArgument(
         'path_config',
-        default_value='trajectory_test_plate.yaml',
+        default_value='trajectory_dual_robot_setup.yaml',
         description='Path to the trajectory config file'
     )
 

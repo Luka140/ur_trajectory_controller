@@ -1,0 +1,54 @@
+/**: # This will put all the parameters in every node
+  ros__parameters:
+
+    controller_name: "ur_script"
+
+    goal_names: ['pose0', 'pose1', 'pose2', 'pose3']
+    pose0:
+      positions: [-2.823919817 ,-1.08790766  ,-2.4297476254,-1.767686526 , 3.152491641 ,-1.7408608119]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [6, 0]
+      laser_on: false
+
+    pose1:
+      positions: [-2.8755951367,-1.0881303906,-2.2980120144,-1.8754562537, 3.1287448883,-1.8233198802]
+      move_type: "movel"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [3, 0]
+      laser_on: false
+
+    pose2:
+      positions: [-2.7878244362,-1.1262501717,-2.3477591477,-1.8753947894, 3.1285577536,-1.8232815901]
+      move_type: "movel"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [30, 0]
+      laser_on: true
+
+    pose3:
+      positions: [-1.5707952414e+00,-1.5707891822e+00,-1.5707852685e+00, 1.5708221436e+00, 3.1415973186e+00,-1.3599789592e-05]
+      move_type: "movej"
+      velocity: 0.0
+      acceleration: 0.0
+      movement_duration: [7, 0]
+      laser_on: false
+
+    joints:
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint
+      - shoulder_pan_joint
+
+    check_starting_point: true
+    starting_point_limits:
+      shoulder_lift_joint: [-1.7, -1.4]
+      elbow_joint: [-1.7, -1.4]
+      wrist_1_joint: [-1.7, -1.4]
+      wrist_2_joint: [1.4, 1.7]
+      wrist_3_joint: [3., 3.2]
+      shoulder_pan_joint: [-0.2, 0.2]
