@@ -2,12 +2,12 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, GroupAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 from launch_ros.substitutions import FindPackageShare
 
-from launch_ros.actions import Node
+from launch_ros.actions import Node, PushRosNamespace
 
 
 def generate_launch_description():
@@ -16,7 +16,7 @@ def generate_launch_description():
     # Declare Launch Arguments for this package
     path_config_arg = DeclareLaunchArgument(
         'path_config',
-        default_value='trajectory_dual_robot_setup.yaml',
+        default_value='trajectory_moving_grinder_dual_robot.yaml',
         description='Path to the trajectory config file'
     )
 
@@ -108,8 +108,18 @@ def generate_launch_description():
     driver = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory(pkg), 'launch', 'ur_driver.launch.py')
-        )
+        ),
+        launch_arguments={
+            "robot_ip": "192.168.0.1"
+        }.items()
     )
+
+#     driver_w_namespace = GroupAction(
+#         actions=[
+#             PushRosNamespace('UR'),
+#             driver,
+#       ]
+#    )
 
     scanner = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -163,6 +173,7 @@ def generate_launch_description():
 
     # Add Actions
     ld.add_action(driver)
+    # ld.add_action(driver_w_namespace)
     ld.add_action(movement_coordinator)
     ld.add_action(controller)
     ld.add_action(lls_pcl)

@@ -86,6 +86,7 @@ def generate_launch_description():
                 launch_arguments={
                     "ur_type": ur_type,
                     "robot_ip": robot_ip,
+                    # "robot_ip": "192.168.0.1",
                     "kinematics_params_file": kinematics_params_file,
                     # "kinematics_params_file": kinematics_params_file
                     # "tf_prefix": [LaunchConfiguration("ur_type"), "_"],
