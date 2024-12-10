@@ -2,9 +2,9 @@
 Package using the Universal Robots ROS2 driver to control a UR16e.
 
 ### Capabilities:
-- Record waypoints by manually moving the robot using freedrive, and clicking 'j' or 'l' on your keyboard for move J or move L.
+- Record waypoints by manually moving the robot using freedrive, and clicking 'j' or 'l' on your keyboard for move J or move L. Note that there are some traces of code relating to different moves, like move p, but these were not implemented fully.
 - Generates .yaml trajectory files.
-- For each move a flag can be set to turn a laser scanner on or off.
+- For each move, a flag can be set to turn a laser scanner on or off.
 - The trajectories can then be played back. 
 - Currently uses the duration of moves, not velocity or acceleration. 
 
@@ -23,7 +23,7 @@ To make full use of the package, it is used alongside the following two packages
 - [lls_processing](https://github.com/Luka140/lls_processing)
 - Open3D
 
-```
+```bash 
 git clone git@github.com:Luka140/scancontrol.git
 git clone git@github.com:Luka140/lls_processing.git
 
@@ -32,15 +32,28 @@ pip install open3d==0.18.0 numpy==1.24.0
 
 
 
-## Launch [TODO]
-TODO DESCRIBE WHAT EACH ONE DOES, MAYBE CLEAN UP A BIT?!
+## Launch 
+To create a 3D scan, launch the following:
+```bash
+ros2 launch ur_trajectory_controller ur_surface_measurement.launch.py
+```
+
+To record a trajectory, launch the following:
+```bash 
+ros2 launch ur_trajectory_controller ur_record_trajectory.launch.py
+```
+It can be useful to launch the laser scanner node during recording, to see where the scanner is pointing. For this, use:
+```bash
+ros2 launch ur_trajectory_controller ur_launch_scanner.launch.py
+```
+
 
 ## Nodes 
-The current node architecture works but is not the most logical but it came as a result of changing goals. The `ur_controller` takes a config .yaml file, which specifies the trajectory, processes it and stores it in a list. If `autonomous_execution` is set to true, it will compile a UR script for this trajectory and then send it to the `ur_script_interface` in the UR driver. Otherwise, it will send the moves one by one whenever prompted by the `~/trigger_move` topic. The `measurement_coordinator` (`surface_scan_coordinator.py`) node is an extension of the previous node. It also takes in the config .yaml. It loops through the moves and triggers them whenever the duration of the previous one has passed. Additionally, it checks the `laser_on` entry in the config for each move, and turns the laser scanner on or off based on this. At the end of the trajectory it requests `/pcl_constructor/combine_pointclouds` to create a reconstruction of the full point cloud. It may make more sense to make the `ur_controller` receive messages with a move or set of moves, from the `measurement_coordinator`, rather than providing both of them with the full config file. 
+The current node architecture works but is not the most logical but it came as a result of changing goals. The `ur_controller` takes a config .yaml file, which specifies the trajectory, processes it and stores it in a list. If `autonomous_execution` is set to true, it will compile a UR script for this trajectory and then send it to the `ur_script_interface` in the UR driver. Otherwise, it will send the moves one by one whenever prompted by the `~/trigger_move` topic. The `measurement_coordinator` (`surface_scan_coordinator.py`) node is an extension of the previous node. It also takes in the config .yaml. It loops through the moves and triggers them whenever the duration of the previous one has passed. Additionally, it checks the `laser_on` entry in the config for each move, and turns the laser scanner on or off based on this. At the end of the trajectory, it requests `/pcl_constructor/combine_pointclouds` to create a reconstruction of the full point cloud. It may make more sense to make the `ur_controller` receive messages with a move or set of moves, from the `measurement_coordinator`, rather than providing both of them with the full config file. 
 
 In addition to these two nodes, there is the `ur_trajectory_recorder` node. This listens to key presses and will store the current joint state as a `movej` or `movel` if the "J" or "L" key is pressed. Then when the "Enter" key is pressed, a .yaml file will be created with this stored trajectory, which can be read by `measurement_coordinator` and `ur_controller`. Note that after recording, the durations of the moves should still be set, along with the laser state. In addition to this, there is a list of safe starting joint positions at the bottom. The joint states should be in this range of values (in radians) to be able to start the trajectory. 
 
-The `ur_traj_trigger_tester` file contains a node that publishes some messages on key presses. It was used for debugging at some point, but is largely important. [TO BE REMOVED]
+The `ur_traj_trigger_tester` file contains a node that publishes some messages on key presses. It was used for debugging at some point but is largely important. [TO BE REMOVED]
 
 ### `ur_controller`
 Note that there are some interfaces left in this node to use the scaled joint trajectory controller. This is not used, in favour of the ur script interface. The ur script interface was used to guarantee linear motions. 
@@ -64,7 +77,7 @@ Published topics:
 
 Services:
 - `/pcl_constructor/combine_pointclouds` (data_gathering_msgs/srv/RequestPCL): (CLIENT) Requests the combination and storage of all point clouds gathered during the trajectory execution.
-- `/execute_loop` (data_gathering_msgs/srv/RequestPCL): (SERVER) Starts a loop of trajectory execution when loop_on_service parameter is enabled. Returns the final combined point cloud after the loop.
+- `/execute_loop` (data_gathering_msgs/srv/RequestPCL): (SERVER) Starts a loop of trajectory execution when the `loop_on_service parameter` is enabled. Returns the final combined point cloud after the loop.
 
 Parameters:
 - `auto_loop` (bool, default: False): If True, the trajectory loop executes automatically and infinitely.
