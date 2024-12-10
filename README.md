@@ -55,6 +55,7 @@ In addition to these two nodes, there is the `ur_trajectory_recorder` node. This
 
 The `ur_traj_trigger_tester` file contains a node that publishes some messages on key presses. It was used for debugging at some point but is largely important. [TO BE REMOVED]
 
+---- 
 ### `ur_controller`
 Note that there are some interfaces left in this node to use the scaled joint trajectory controller. This is not used, in favour of the ur script interface. The ur script interface was used to guarantee linear motions. 
 
@@ -68,7 +69,7 @@ Subscribed topics:
 Parameters:
 - `autonomous_execution` (bool, default: False): Determines whether all moves should be executed autonomously or one at a time.
 - The trajectory config file. This includes a collection of additional parameters which are automatically set. See [this example](https://github.com/Luka140/ur_trajectory_controller/blob/master/config/trajectories/trajectory_dual_robot_setup.yaml) of a config file. 
- 
+----
 ### `surface_scan_coordinator`
 Published topics:
 -`/ur_controller/trigger_move` (std_msgs/Empty): Triggers the next move in the robot's trajectory.
@@ -83,7 +84,7 @@ Parameters:
 - `auto_loop` (bool, default: False): If True, the trajectory loop executes automatically and infinitely.
 - `loop_on_service` (bool, default: False): If True, allows external triggering of trajectory loops via the /execute_loop service.
 - The trajectory config file. This includes a collection of additional parameters which are automatically set. See [this example](https://github.com/Luka140/ur_trajectory_controller/blob/master/config/trajectories/trajectory_dual_robot_setup.yaml) of a config file. 
-
+----
 ### `ur_trajectory_recorder`
 The `path_recorder` node allows the recording of robot joint states and the generation of trajectories that can be executed later. It listens for joint states and specific keyboard inputs to build and save trajectories.
 
